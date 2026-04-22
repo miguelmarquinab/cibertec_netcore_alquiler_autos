@@ -1,0 +1,64 @@
+﻿@model List<AlquilerViewModel>
+@{
+    ViewData["Title"] = "Listado de Alquileres";
+}
+
+@if (TempData["ok"] != null)
+{
+    <div class="alert alert-success">@TempData["ok"]</div>
+}
+
+<div class="card-panel mb-4">
+    <form method="get" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Fecha inicio</label>
+            <input type="date" name="fechaInicio" value="@ViewBag.FechaInicio" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Fecha fin</label>
+            <input type="date" name="fechaFin" value="@ViewBag.FechaFin" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Texto</label>
+            <input type="text" name="texto" value="@ViewBag.Texto" class="form-control" placeholder="Cliente, DNI, placa, modelo..." />
+        </div>
+        <div class="col-md-2 d-flex align-items-end gap-2">
+            <button class="btn btn-primary">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary">Limpiar</a>
+        </div>
+    </form>
+</div>
+
+<div class="card-panel">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Auto</th>
+                    <th>Periodo</th>
+                    <th>Días</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IdAlquiler</td>
+                        <td>@item.Cliente</td>
+                        <td>@item.Auto</td>
+                        <td>@item.FechaInicio.ToString("dd/MM/yyyy") - @item.FechaFin.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Dias</td>
+                        <td>S/ @item.Total.ToString("N2")</td>
+                        <td>@item.Estado</td>
+                        <td>@item.UsuarioRegistro</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AlquilerAutos</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="app-body">
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">A</div>
+                <div>
+                    <h4>AlquilerAutos</h4>
+                    <span>Sistema MVC</span>
+                </div>
+            </div>
+
+            <nav class="menu">
+                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                <a asp-controller="Autos" asp-action="Index">Autos</a>
+                <a asp-controller="Clientes" asp-action="Index">Clientes</a>
+                <a asp-controller="Alquileres" asp-action="Index">Alquileres</a>
+                <a asp-controller="Alquileres" asp-action="Create">Nuevo alquiler</a>
+                <a asp-controller="Reportes" asp-action="Index">Reportes</a>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="user-name">@ViewBag.Usuario</div>
+                <div class="user-role">@ViewBag.Rol</div>
+                <a asp-controller="Account" asp-action="Logout" class="btn btn-danger btn-sm mt-3 w-100">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <main class="content">
+            <header class="topbar">
+                <div>
+                    <h2 class="page-title">@ViewData["Title"]</h2>
+                    <p class="page-subtitle">Gestión moderna de alquiler de autos</p>
+                </div>
+            </header>
+
+            <section class="page-content">
+                @RenderBody()
+            </section>
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

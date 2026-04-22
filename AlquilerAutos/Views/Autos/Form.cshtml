@@ -1,0 +1,71 @@
+﻿@model AutoViewModel
+@{
+    ViewData["Title"] = Model.IdAuto == 0 ? "Nuevo Auto" : "Editar Auto";
+}
+
+<div class="card-panel form-panel">
+    <form asp-action="Save" method="post" class="row g-3">
+        <input asp-for="IdAuto" type="hidden" />
+
+        <div class="col-md-4">
+            <label asp-for="Placa" class="form-label"></label>
+            <input asp-for="Placa" class="form-control" />
+            <span asp-validation-for="Placa" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Modelo" class="form-label"></label>
+            <input asp-for="Modelo" class="form-control" />
+            <span asp-validation-for="Modelo" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Anio" class="form-label"></label>
+            <input asp-for="Anio" class="form-control" />
+            <span asp-validation-for="Anio" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Color" class="form-label"></label>
+            <input asp-for="Color" class="form-control" />
+            <span asp-validation-for="Color" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="PrecioPorDia" class="form-label"></label>
+            <input asp-for="PrecioPorDia" class="form-control" />
+            <span asp-validation-for="PrecioPorDia" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Estado" class="form-label"></label>
+            <select asp-for="Estado" class="form-select">
+                <option value="DISPONIBLE">DISPONIBLE</option>
+                <option value="ALQUILADO">ALQUILADO</option>
+                <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="IdMarca" class="form-label">Marca</label>
+            <select asp-for="IdMarca" asp-items="ViewBag.Marcas" class="form-select">
+                <option value="">-- Seleccione --</option>
+            </select>
+            <span asp-validation-for="IdMarca" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="ImagenUrl" class="form-label"></label>
+            <input asp-for="ImagenUrl" class="form-control" />
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary">Guardar</button>
+            <a asp-action="Index" class="btn btn-secondary">Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

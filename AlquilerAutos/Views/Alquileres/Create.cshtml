@@ -1,0 +1,112 @@
+﻿@model AlquilerViewModel
+@{
+    ViewData["Title"] = "Registrar Alquiler";
+}
+
+<div class="card-panel form-panel">
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <form asp-action="Create" method="post" class="row g-3" id="frmAlquiler">
+        <div class="col-md-6">
+            <label asp-for="IdCliente" class="form-label">Cliente</label>
+            <select asp-for="IdCliente" asp-items="ViewBag.Clientes" class="form-select">
+                <option value="">-- Seleccione cliente --</option>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="IdAuto" class="form-label">Auto disponible</label>
+            <select asp-for="IdAuto" asp-items="ViewBag.Autos" class="form-select" id="IdAuto">
+                <option value="">-- Seleccione auto --</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label asp-for="FechaInicio" class="form-label"></label>
+            <input asp-for="FechaInicio" class="form-control" id="FechaInicio" />
+        </div>
+
+        <div class="col-md-3">
+            <label asp-for="FechaFin" class="form-label"></label>
+            <input asp-for="FechaFin" class="form-control" id="FechaFin" />
+        </div>
+
+        <div class="col-md-3">
+            <label asp-for="Garantia" class="form-label"></label>
+            <input asp-for="Garantia" class="form-control" id="Garantia" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Precio por día</label>
+            <input type="text" id="PrecioDiaTexto" class="form-control" readonly />
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Días</label>
+            <input type="text" id="DiasTexto" class="form-control" readonly />
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Subtotal</label>
+            <input type="text" id="SubtotalTexto" class="form-control" readonly />
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Total estimado</label>
+            <input type="text" id="TotalTexto" class="form-control" readonly />
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary">Registrar alquiler</button>
+            <a asp-action="Index" class="btn btn-secondary">Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let precioDia = 0;
+
+        function calcular() {
+            const fi = new Date($("#FechaInicio").val());
+            const ff = new Date($("#FechaFin").val());
+            const garantia = parseFloat($("#Garantia").val() || "0");
+
+            if ($("#FechaInicio").val() && $("#FechaFin").val() && !isNaN(fi) && !isNaN(ff)) {
+                const diff = Math.floor((ff - fi) / (1000 * 60 * 60 * 24)) + 1;
+                const dias = diff > 0 ? diff : 0;
+                const subtotal = dias * precioDia;
+                const total = subtotal + garantia;
+
+                $("#DiasTexto").val(dias);
+                $("#SubtotalTexto").val("S/ " + subtotal.toFixed(2));
+                $("#TotalTexto").val("S/ " + total.toFixed(2));
+            }
+        }
+
+        $("#IdAuto").change(function () {
+            const idAuto = $(this).val();
+
+            if (!idAuto) {
+                precioDia = 0;
+                $("#PrecioDiaTexto").val("");
+                calcular();
+                return;
+            }
+
+            $.get('@Url.Action("PrecioAuto", "Alquileres")', { idAuto: idAuto }, function (res) {
+                if (res.ok) {
+                    precioDia = parseFloat(res.precio);
+                    $("#PrecioDiaTexto").val("S/ " + precioDia.toFixed(2));
+                    calcular();
+                }
+            });
+        });
+
+        $("#FechaInicio, #FechaFin, #Garantia").on("change keyup", calcular);
+    </script>
+}

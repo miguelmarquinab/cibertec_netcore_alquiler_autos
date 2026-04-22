@@ -1,0 +1,106 @@
+﻿@model PaginacionViewModel<AutoViewModel>
+@{
+    ViewData["Title"] = "Mantenimiento de Autos";
+}
+
+@if (TempData["ok"] != null)
+{
+    <div class="alert alert-success">@TempData["ok"]</div>
+}
+
+<div class="card-panel mb-4">
+    <form method="get" class="row g-3">
+        <div class="col-md-5">
+            <input type="text" name="texto" value="@Model.Texto" class="form-control" placeholder="Buscar por placa, modelo o marca" />
+        </div>
+        <div class="col-md-3">
+            <select name="estado" class="form-select">
+                <option value="">-- Todos --</option>
+                <option value="DISPONIBLE" selected="@(Model.Estado == "DISPONIBLE")">DISPONIBLE</option>
+                <option value="ALQUILADO" selected="@(Model.Estado == "ALQUILADO")">ALQUILADO</option>
+                <option value="MANTENIMIENTO" selected="@(Model.Estado == "MANTENIMIENTO")">MANTENIMIENTO</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button class="btn btn-primary">Buscar</button>
+            <a asp-action="Index" class="btn btn-secondary">Limpiar</a>
+            @if (ViewBag.Rol == "ADMINISTRADOR")
+            {
+                <a asp-action="Create" class="btn btn-success ms-auto">Nuevo Auto</a>
+            }
+        </div>
+    </form>
+</div>
+
+<div class="row g-4">
+    @foreach (var item in Model.Items)
+    {
+        <div class="col-md-6 col-xl-3">
+            <div class="car-card">
+                <img src="@(!string.IsNullOrEmpty(item.ImagenUrl) ? item.ImagenUrl : "https://via.placeholder.com/600x400?text=Auto")" alt="@item.Modelo" />
+                <div class="car-card-body">
+                    <div class="car-top">
+                        <h5>@item.NombreMarca @item.Modelo</h5>
+                        <span class="badge-state @item.Estado.ToLower()">@item.Estado</span>
+                    </div>
+                    <p class="text-muted mb-1">Placa: <strong>@item.Placa</strong></p>
+                    <p class="text-muted mb-1">Año: <strong>@item.Anio</strong></p>
+                    <p class="text-muted mb-3">Color: <strong>@item.Color</strong></p>
+                    <div class="price-box">S/ @item.PrecioPorDia.ToString("N2") / día</div>
+
+                    @if (ViewBag.Rol == "ADMINISTRADOR")
+                    {
+                        <div class="d-flex gap-2 mt-3">
+                            <a asp-action="Edit" asp-route-id="@item.IdAuto" class="btn btn-warning btn-sm w-100">Editar</a>
+                            <button class="btn btn-danger btn-sm w-100 btn-delete-auto" data-id="@item.IdAuto">Eliminar</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.TotalPaginas > 1)
+{
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-texto="@Model.Texto"
+                       asp-route-estado="@Model.Estado"
+                       asp-route-pagina="@i">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+@section Scripts {
+    <script>
+        $(document).on("click", ".btn-delete-auto", function () {
+            const id = $(this).data("id");
+
+            Swal.fire({
+                title: "¿Eliminar auto?",
+                text: "Esta acción hará una eliminación lógica.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar"
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                $.post('@Url.Action("Delete", "Autos")', { id: id }, function (res) {
+                    if (res.ok) {
+                        Swal.fire("Correcto", res.mensaje, "success").then(() => location.reload());
+                    } else {
+                        Swal.fire("Error", res.mensaje, "error");
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,80 @@
+﻿@model List<ClienteViewModel>
+@{
+    ViewData["Title"] = "Mantenimiento de Clientes";
+}
+
+@if (TempData["ok"] != null)
+{
+    <div class="alert alert-success">@TempData["ok"]</div>
+}
+
+<div class="card-panel mb-4">
+    <form method="get" class="row g-3">
+        <div class="col-md-8">
+            <input type="text" name="texto" value="@ViewBag.Texto" class="form-control" placeholder="Buscar por DNI, nombres o apellidos" />
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button class="btn btn-primary">Buscar</button>
+            <a asp-action="Index" class="btn btn-secondary">Limpiar</a>
+            <a asp-action="Create" class="btn btn-success ms-auto">Nuevo Cliente</a>
+        </div>
+    </form>
+</div>
+
+<div class="card-panel">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>DNI</th>
+                    <th>Cliente</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Licencia</th>
+                    <th style="width:180px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IdCliente</td>
+                        <td>@item.Dni</td>
+                        <td>@item.Nombres @item.Apellidos</td>
+                        <td>@item.Email</td>
+                        <td>@item.Telefono</td>
+                        <td>@item.LicenciaConducir</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.IdCliente" class="btn btn-warning btn-sm">Editar</a>
+                            <button class="btn btn-danger btn-sm btn-delete-cliente" data-id="@item.IdCliente">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).on("click", ".btn-delete-cliente", function () {
+            const id = $(this).data("id");
+
+            Swal.fire({
+                title: "¿Eliminar cliente?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar"
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                $.post('@Url.Action("Delete", "Clientes")', { id: id }, function (res) {
+                    if (res.ok) {
+                        Swal.fire("Correcto", res.mensaje, "success").then(() => location.reload());
+                    }
+                });
+            });
+        });
+    </script>
+}
